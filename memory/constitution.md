@@ -19,6 +19,7 @@ projeto: o conjunto de princípios que toda `spec.md`/`plan.md` deve respeitar.
 |---|---|
 | Código: identificadores, comentários, nomes de arquivo de código | Inglês |
 | Mensagens de commit | Inglês |
+| Issues e Pull Requests (título e descrição) | Inglês |
 | Specs de comportamento (Gherkin, quando usado dentro de `spec.md`) | Inglês |
 | Documentação de projeto (`README.md`, `docs/*.md`, `specs/**/*.md`) | Português |
 
@@ -133,6 +134,10 @@ O board de Issues do GitHub é o lugar para visualizar o andamento do projeto �
 
 Commits e PRs fecham a Issue correspondente com `Closes #N` na mensagem — mesma convenção
 usada para referenciar uma decisão resolvida em `plan.md`, só que apontando para a Issue.
+
+Título e corpo da Issue em inglês (ver tabela "Idioma" acima) — mesmo raciocínio das
+mensagens de commit e de PR: Issue, commit e PR compõem a mesma trilha rastreável, e misturar
+idioma entre eles quebra essa continuidade.
 
 ## Documentação viva por feature
 
