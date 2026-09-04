@@ -12,6 +12,7 @@ não deve ser publicada junto com o restante de `docs/`.
 diário. Rastreamento de trabalho passa a usar Issues do GitHub, espelhando `tasks.md` de
 cada feature.
 
-**Commits:** (preencher com o hash real após o commit)
+**Commits:**
+- `9a58b33` docs: adopt Spec-Driven Development structure
 
 **Issues:** —
