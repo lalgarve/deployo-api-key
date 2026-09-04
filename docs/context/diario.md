@@ -19,5 +19,6 @@ divulgação de uso de ferramentas de IA.
 - `9a58b33` docs: adopt Spec-Driven Development structure
 - `062a18e` docs: record commit hash in today's diary entry
 - `868caac` docs: explain project context and disclose AI tool usage in README
+- `805b7ea` docs: add Issues to the language convention table
 
 **Issues:** —
