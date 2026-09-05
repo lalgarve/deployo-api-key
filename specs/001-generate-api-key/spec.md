@@ -47,6 +47,22 @@ Scenario: HMAC pepper is not configured
   Then the command fails with a configuration-error exit code
   And no row is persisted
   And no plaintext key is printed
+
+Scenario: generate a key with a validity period
+  Given the operator runs "generate --service email-service --validity-days 90"
+  When the command is executed
+  Then a new row is persisted with expires_at set to 90 days after the creation timestamp
+
+Scenario: generate a key without a validity period
+  Given the operator runs "generate --service email-service" without "--validity-days"
+  When the command is executed
+  Then a new row is persisted with expires_at set to null (no expiration)
+
+Scenario: validity in days must be a positive integer
+  Given the operator runs "generate --service email-service --validity-days 0" (or a negative or non-integer value)
+  When the command is executed
+  Then it fails with a usage-error exit code
+  And no row is persisted
 ```
 
 ## Requisitos funcionais
@@ -65,6 +81,14 @@ Scenario: HMAC pepper is not configured
   criação (UTC).
 - FR7: O hash usa HMAC-SHA256 com uma chave secreta (pepper) mantida fora do banco de dados
   e fora do código-fonte (variável de ambiente — ver `plan.md`).
+- FR8: O comando `generate` aceita um argumento opcional `--validity-days <N>` definindo por
+  quantos dias, a partir da criação, a chave é válida.
+- FR9: Quando `--validity-days` não é informado, a chave não tem prazo de validade
+  (indeterminada) — o campo de validade fica nulo.
+- FR10: Quando informado, `--validity-days` deve ser um número inteiro positivo (> 0);
+  qualquer outro valor falha com erro de uso, sem persistir nada.
+- FR11: Esta feature só calcula e grava o prazo de validade — checar se uma chave já expirou
+  no momento do uso é responsabilidade da futura biblioteca de leitura (fora de escopo aqui).
 
 ## Requisitos não-funcionais
 
@@ -78,7 +102,9 @@ Scenario: HMAC pepper is not configured
 - Verificar/validar uma chave existente (feature futura separada).
 - A biblioteca de leitura usada pelos serviços consumidores para validar chaves recebidas
   (feature futura separada — este projeto só emite).
-- Revogação, expiração ou rotação de chaves.
+- Revogar uma chave antes do prazo de validade, ou rotacioná-la automaticamente.
+- Checar, em tempo de uso, se uma chave já passou do prazo de validade (fica com a futura
+  biblioteca de leitura — ver FR11).
 - Interface de administração (decisão já registrada no README do projeto).
 - Listar ou auditar chaves já emitidas via CLI.
 

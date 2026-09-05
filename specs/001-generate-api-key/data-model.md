@@ -10,9 +10,10 @@
 | `service_name` | VARCHAR | sim | não vazio; identifica o serviço/cliente dono da chave |
 | `key_hash` | VARCHAR (ou BYTEA, a definir com a lib de HMAC escolhida) | sim | HMAC-SHA256 da chave em texto puro; único (índice `UNIQUE`) |
 | `created_at` | TIMESTAMP (UTC) | sim | gerado automaticamente na inserção |
+| `expires_at` | TIMESTAMP (UTC) | não | nulo = validade indeterminada; quando definido, igual a `created_at` + N dias (`--validity-days`) |
 
-Tipo exato de `id` e engine de banco dependem da decisão "em aberto" em `plan.md`
-("Motor de banco de dados").
+Migration via Flyway (`db/migration`), mapeada por Hibernate/Spring Data JPA (ver
+`plan.md`).
 
 ## Relacionamentos
 
@@ -27,3 +28,6 @@ decisão em aberto em `spec.md`), mas isso não é modelado agora.
   tabela.
 - `service_name` nunca é vazio ou só espaço em branco (validado antes da persistência, não
   só no banco).
+- `expires_at`, quando não nulo, é sempre posterior a `created_at` — garantido por
+  construção, já que é sempre calculado como `created_at` + N dias com N > 0 (nunca definido
+  diretamente pelo operador).
