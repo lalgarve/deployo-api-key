@@ -16,12 +16,13 @@ serviço(s) consumidor(es), que só têm acesso de leitura (`SELECT`) a essa tab
 | Onde fica o pepper do HMAC | Variável de ambiente (nome a definir na implementação, ex. `API_KEY_HMAC_PEPPER`), nunca no banco nem no código-fonte | resolvida | Se a tabela de chaves vazar sozinha, os hashes continuam inúteis sem o pepper — motivo de existir separado do salt/hash armazenado. |
 | Prefixo da chave gerada | `dak_` ("Deployo API Key") | resolvida | Prefixo genérico do projeto, não amarrado ao primeiro consumidor (serviço de e-mail) — o objetivo declarado é um padrão reutilizável entre APIs internas futuras. |
 | Tamanho da chave | 32 bytes de entropia aleatória (256 bits), codificados em base64url, com o prefixo `dak_` concatenado antes | resolvida | Padrão de mercado para tokens de API (GitHub, Stripe usam entropia equivalente ou maior). |
-| Mecanismo de acesso a banco (JDBC puro vs Spring Data vs outra biblioteca) | — | **em aberto** | A ferramenta é uma CLI de vida curta — uma dependência leve (JDBC puro, ou um wrapper fino tipo JDBI) pode bastar e evita o custo de start-up de um contexto Spring só para uma inserção. Mas o `jogo-acoes` usa Spring Data JPA; vale avaliar se consistência entre os dois projetos pesa mais que a simplicidade aqui. |
-| Motor de banco de dados | Provavelmente PostgreSQL | **em aberto — a confirmar** | Consistente com os perfis `docker`/`staging`/`production` do `jogo-acoes`, mas não confirmado para este projeto especificamente. |
-| Ferramenta de migration (Flyway/Liquibase/nenhuma) | — | **em aberto** | Mesma lógica de migrations versionadas já usada no `jogo-acoes`; a confirmar se este projeto replica isso ou usa algo mais simples dado seu tamanho. |
+| Mecanismo de acesso a banco | Spring Data JPA + Hibernate | resolvida | Mesmo padrão do `jogo-acoes` — reaproveita conhecimento e convenções já estabelecidos entre os dois projetos do portfólio. O custo de start-up de um contexto Spring é irrelevante aqui: a CLI roda raramente, sob operação manual, não em um hot path. |
+| Motor de banco de dados | PostgreSQL nos perfis com infraestrutura real (`docker`, usado também em CI); H2 embarcado no perfil `sandbox` | resolvida | Mesmo padrão de nomenclatura de ambientes já adotado neste projeto (ver "Nomenclatura de ambientes" em `memory/constitution.md`) e replicado do `jogo-acoes` — H2 permite rodar testes/CLI sem depender de infraestrutura externa, Postgres real valida contra o motor efetivamente usado em produção. |
+| Ferramenta de migration | Flyway | resolvida | Mesma ferramenta do `jogo-acoes` — migrations versionadas em `src/main/resources/db/migration`, aplicadas automaticamente pelo Spring Boot na subida da aplicação. |
 
 Tarefas que dependem de uma decisão "em aberto" ficam bloqueadas nela em `tasks.md` — a
 decisão vira commit `decision:` quando resolvida, atualizando esta tabela no mesmo commit.
+As três decisões acima foram resolvidas assim, sem nenhuma ainda em aberto nesta feature.
 
 ## Estrutura de módulos/pacotes
 
@@ -38,5 +39,5 @@ Maven separados desde já, mesmo com a leitura ainda fora de escopo desta featur
   novamente (não há como re-derivar as chaves originais). Mitigação é operacional (backup do
   valor do pepper), não uma feature de código — registrar isso como procedimento no README ou
   runbook quando a implementação acontecer.
-- Deixar o mecanismo de acesso a banco em aberto atrasa a T001 (schema/migration) de
-  `tasks.md` até essa decisão ser tomada.
+- Rodar Spring Boot completo para uma CLI de execução curta adiciona alguns segundos de
+  start-up por chamada — aceito conscientemente em troca de consistência com o `jogo-acoes`.
