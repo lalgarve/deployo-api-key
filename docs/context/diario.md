@@ -64,3 +64,14 @@ escrevi um smoke test real chamando `main()` diretamente, cobrindo a linha de ve
 **Nota:** o `docker-compose.yml`/CI não foram validados de ponta a ponta nesta sessão — sem
 daemon Docker disponível neste ambiente. Sintaxe checada (`docker compose config`, YAML do
 workflow), mas vale confirmar no primeiro run real de CI.
+
+O primeiro CI real da PR #4 falhou, confirmando exatamente essa ressalva: com
+`SPRING_PROFILES_ACTIVE=docker`, `application-docker.yml` sobrescreve
+`driver-class-name` para `org.postgresql.Driver`, e o smoke test só sobrescrevia a URL do
+datasource (para H2) — a aplicação tentou abrir a URL H2 com o driver do Postgres e quebrou.
+Invisível localmente porque o perfil `docker` nunca tinha rodado de verdade antes do push.
+Corrigido sobrescrevendo `driver-class-name` também, e portado o mesmo fix pro
+`deployo-template-java` (mesmo padrão, mesmo bug latente, PR própria lá).
+
+**Commits (continuação):**
+- `b7051b6` fix: override datasource driver in the smoke test, not just the URL
