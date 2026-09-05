@@ -76,11 +76,11 @@ Uma mensagem de commit completa, para uma mudança não trivial, normalmente tem
 Exemplo:
 
 ```
-feat: add Argon2id hashing for generated API keys
+feat: add HMAC-SHA256 hashing for generated API keys
 
 Plaintext keys were being stored directly, which is a real risk if the
 database is ever exposed — hashing means a leaked row is useless without
-also compromising the hash.
+also compromising the hash and the separately-held pepper.
 
 ApiKeyHasherTest proves the hash/verify round-trip and rejects a tampered
 key (3/3 passing).
@@ -204,6 +204,25 @@ gramática tem armadilhas que só aparecem no parser de verdade. Antes de consid
 diagrama pronto, renderizar de verdade contra um motor Mermaid real (ex.:
 `npx @mermaid-js/mermaid-cli`, mesmo motor que o GitHub usa para blocos ```` ```mermaid ````),
 não só validar visualmente/mentalmente a sintaxe.
+
+## Nomenclatura de ambientes
+
+Nomear ambientes pela **característica real da infraestrutura**, não por um rótulo genérico
+tipo "dev"/"qa"/"test" — esses termos são ambíguos e mudam de significado de projeto pra
+projeto, obrigando a reexplicar o que cada um significa aqui. Preferir um nome que já
+descreve a própria restrição ou característica do ambiente.
+
+Exemplo usado neste projeto (`application-sandbox.yml`/`application-docker.yml`):
+
+| Nome | O que descreve |
+|---|---|
+| `sandbox` | Sem infraestrutura externa disponível (ex.: rodando isolado, sem Docker) — usa H2 embarcado no lugar do banco real |
+| `docker` | Infraestrutura real via containers, local (`docker-compose`) ou CI — descartável |
+| `staging` | Pré-produção: infraestrutura e dados reais, mas isolados de produção |
+| `production` | Produção |
+
+Cada ambiente tem seu próprio arquivo de configuração autodescritivo — um comentário no topo
+explicando por que aquele ambiente existe, quem o opera e quais restrições ele impõe.
 
 ## Testes: preferir real a fake sempre que der
 
