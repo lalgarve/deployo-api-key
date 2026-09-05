@@ -3,7 +3,7 @@
 | ID | Descrição | Depende de | Paralelizável | Issue |
 |---|---|---|---|---|
 | ~~T000~~ | Resolver as decisões em aberto de `plan.md` — resolvida: Spring Data JPA/Hibernate, PostgreSQL (`docker`/CI) + H2 (`sandbox`), Flyway | — | | #2 |
-| T001 | Criar migration Flyway da tabela `api_keys` (`data-model.md`, incluindo `expires_at`) | T000 | | #2 |
+| ~~T001~~ | Criar migration Flyway da tabela `api_keys` (`data-model.md`, incluindo `expires_at`) | T000 | | #2 |
 | T002 | Implementar geração de chave aleatória com prefixo `dak_` (32 bytes de entropia, base64url) | — | [P] | #2 |
 | T003 | Implementar hashing HMAC-SHA256 lendo o pepper de variável de ambiente, com erro claro se ausente | — | [P] | #2 |
 | T004 | Implementar parsing/validação de `--validity-days` (inteiro positivo opcional) e cálculo de `expires_at` (nulo quando omitido) | — | [P] | #2 |
