@@ -236,6 +236,8 @@ campo sob teste, mantendo os demais válidos.
 
 **Java** (stack deste projeto):
 
-- Piso de cobertura via JaCoCo (`mvn verify`).
-- Cobertura comentada na PR a cada push via `madrapps/jacoco-report`, quando o workflow de CI
-  estiver configurado.
+- Piso de cobertura via JaCoCo (`mvn verify`), 80% de linha.
+- CI (`.github/workflows/ci.yml`) sobe PostgreSQL real via `docker-compose.yml` e roda a
+  suíte com `SPRING_PROFILES_ACTIVE=docker` — nunca contra o perfil `sandbox` (H2), reservado
+  para desenvolvimento local sem Docker (ver "Nomenclatura de ambientes").
+- Cobertura comentada na PR a cada push via `madrapps/jacoco-report`.

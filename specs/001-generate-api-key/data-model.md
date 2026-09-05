@@ -6,14 +6,18 @@
 
 | Campo | Tipo | Obrigatório | Validação |
 |---|---|---|---|
-| `id` | UUID | sim | gerado automaticamente na inserção |
-| `service_name` | VARCHAR | sim | não vazio; identifica o serviço/cliente dono da chave |
-| `key_hash` | VARCHAR (ou BYTEA, a definir com a lib de HMAC escolhida) | sim | HMAC-SHA256 da chave em texto puro; único (índice `UNIQUE`) |
+| `id` | BIGSERIAL | sim | gerado automaticamente na inserção |
+| `service_name` | VARCHAR(255) | sim | não vazio; identifica o serviço/cliente dono da chave |
+| `key_hash` | VARCHAR(255) | sim | HMAC-SHA256 da chave em texto puro, em hexadecimal; único (índice `UNIQUE`) |
 | `created_at` | TIMESTAMP (UTC) | sim | gerado automaticamente na inserção |
 | `expires_at` | TIMESTAMP (UTC) | não | nulo = validade indeterminada; quando definido, igual a `created_at` + N dias (`--validity-days`) |
 
-Migration via Flyway (`db/migration`), mapeada por Hibernate/Spring Data JPA (ver
-`plan.md`).
+`BIGSERIAL`/`VARCHAR(255)` seguem a mesma convenção de tipos do `jogo-acoes` (ver
+`app/src/main/resources/db/migration/V1__init_schema.sql`), agora que motor de banco e
+mecanismo de acesso estão resolvidos em `plan.md`. Migration via Flyway, em dois diretórios
+paralelos (`db/migration` para PostgreSQL, `db/migration-h2` para o perfil `sandbox`) — mesmo
+padrão do `jogo-acoes`, necessário porque o schema roda contra motores diferentes conforme o
+perfil ativo. Mapeamento por Hibernate/Spring Data JPA chega na T005.
 
 ## Relacionamentos
 

@@ -38,9 +38,29 @@ isoladamente. Adicionado também um prazo de validade opcional à chave (`--vali
 inteiro positivo; se omitido, a chave não expira) — `expires_at` na tabela, verificação de
 expiração em si continua fora de escopo (fica com a futura biblioteca de leitura).
 
+Começada a implementação: T001 concluída — projeto Maven (Spring Boot 4.1.0, Java 21)
+criado do zero com a migration Flyway de `api_keys`, perfis `sandbox` (H2) e `docker`
+(PostgreSQL) espelhando o `jogo-acoes`. Validado nesta sessão contra H2/sandbox (sem Docker
+disponível neste ambiente): `mvn test`, 6/6 passando, cobrindo inserção completa, `expires_at`
+nulo, e rejeição de `service_name`/`key_hash`/`created_at` nulos e de `key_hash` duplicado.
+
+Configurado o piso de cobertura (JaCoCo, 80% de linha em `mvn verify`) e o CI
+(`.github/workflows/ci.yml`) subindo PostgreSQL real via `docker-compose.yml` e rodando a
+suíte com `SPRING_PROFILES_ACTIVE=docker` — mesmo padrão do `jogo-acoes`. Cogitei excluir a
+classe `DeployoApiKeyApplication` da cobertura (só tem uma linha de boilerplate do Spring
+Boot) mas isso deixaria o JaCoCo analisando zero classes e passando vazio — em vez disso,
+escrevi um smoke test real chamando `main()` diretamente, cobrindo a linha de verdade.
+
 **Commits:**
 - `6ddc76a` feat: add spec, plan and tasks for generate-api-key
 - `c2c9351` decision: use Spring Data JPA/Hibernate, PostgreSQL+H2 and Flyway for generate-api-key
 - `df28ebe` feat: add optional key validity period to generate-api-key
+- `d9a53a9` feat: create the api_keys Flyway migration (T001)
+- `b6ff341` docs: mark T001 done in tasks.md
+- `2fe2dee` feat: enforce 80% JaCoCo coverage and run CI against real Postgres
 
-**Issues:** #2 aberta (épico da feature 001, permanece aberta até T001-T008 serem implementadas)
+**Issues:** #2 aberta (épico da feature 001; T000-T001 concluídas, T002-T008 pendentes)
+
+**Nota:** o `docker-compose.yml`/CI não foram validados de ponta a ponta nesta sessão — sem
+daemon Docker disponível neste ambiente. Sintaxe checada (`docker compose config`, YAML do
+workflow), mas vale confirmar no primeiro run real de CI.

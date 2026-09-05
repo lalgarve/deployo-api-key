@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: deployo-api-key
+  main:
+    # CLI, not a web server -- no embedded Tomcat needed for the generate command.
+    web-application-type: none
+  profiles:
+    default: sandbox
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
