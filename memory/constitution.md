@@ -28,6 +28,32 @@ convenções da linguagem). Documentação em português porque é o idioma da e
 sentido traduzir decisões e raciocínio para um idioma que não é o nativo de quem escreve e
 lê.
 
+## Status do sistema: pré-produção
+
+O sistema ainda não tem usuários reais nem dado em produção — está em pré-produção, e
+continua assim até este status ser explicitamente revisado neste documento. Isso tem
+consequências diretas em como `spec.md`/`plan.md` são escritas e implementadas:
+
+- **Nenhuma migração de dado existente é necessária.** Uma coluna nova pode ser `NOT NULL`
+  direto, sem `default`/sem virar `nullable` "para registros antigos" — não existe registro
+  antigo real que dependa disso. Uma tabela pode ser recriada, uma coluna removida, sem plano
+  de migração dos dados já lá.
+- **Nenhuma preocupação de compatibilidade retroativa de contrato** (versionamento, período
+  de depreciação, cliente antigo continuando a funcionar) — um contrato de interface
+  (`contracts/`) pode mudar de forma incompatível entre specs, sem manter a forma anterior
+  funcionando em paralelo.
+- **Nenhum plano de rollback que preserve dado real** — uma migration Flyway nova pode fazer
+  `DROP COLUMN`/`DROP TABLE` sem se preocupar com "e se alguém já tiver algo lá".
+- Isso não dispensa manter a suíte de testes verde nem seguir o processo de specs antes do
+  código — só remove a categoria de risco "o que fazer com dado/cliente já existente", que
+  normalmente motivaria `nullable`s defensivos, migrações em duas fases, ou versionamento de
+  contrato.
+
+**Quando isso muda**: no primeiro uso real em produção (ex.: o serviço de e-mail passando a
+validar chaves geradas por aqui), esta seção precisa ser atualizada (ou removida) — a partir
+daí, specs que tocam schema/contrato voltam a precisar considerar migração de dado existente
+e compatibilidade retroativa.
+
 ## Commits semânticos
 
 Formato da primeira linha:
@@ -117,6 +143,11 @@ git config core.hooksPath .githooks
   (recriado a partir do estado atual do branch principal) em vez de acumular branches novos a
   cada retomada — mantém o histórico de PRs correspondendo 1:1 a unidades de trabalho reais,
   não a sessões de chat.
+- Essa regra não tem exceção por tipo de mudança nem por onde a sessão está rodando: uma
+  continuação pequena, só de documentação, ou uma correção de CI ainda pertence à mesma linha
+  de trabalho — não é motivo pra abrir um branch novo. E o mesmo vale trocando de ferramenta
+  (Claude Code no navegador numa sessão, Claude Code local na outra): a continuidade é da
+  linha de trabalho, não da sessão nem da ferramenta que a executa.
 - Antes de criar um branch, checar se já existe um branch/PR abordando a mesma feature
   (`specs/NNN-*`) e reaproveitar esse em vez de abrir outro.
 
