@@ -9,12 +9,15 @@ que hoje autentica usuários por link mágico enviado por e-mail. O envio de e-m
 extraído para um serviço próprio — e esse serviço precisa de uma forma de restringir quem
 pode chamá-lo. A solução escolhida é autenticação via API-KEY.
 
-Em vez de resolver isso só para o serviço de e-mail, o objetivo é ter uma forma **padrão** de
-gerar e validar API-KEY em qualquer API interna — o serviço de e-mail é só o primeiro
-consumidor. Como o número de serviços que vão precisar disso é pequeno por enquanto (1), uma
-interface de administração foi conscientemente deixada de fora do escopo inicial: a
-linha de comando já resolve o problema real sem o custo de construir e manter uma UI que
-ninguém usaria ainda.
+Em vez de resolver isso só para o serviço de e-mail, o objetivo é ter um padrão que qualquer
+serviço interno possa adotar para restringir quem pode chamá-lo: cada serviço protegido roda
+sua própria cópia deste projeto — mesmo container, banco de dados próprio, nunca compartilhado
+entre serviços diferentes — e usa o comando `generate` para emitir uma chave por **cliente**
+autorizado (ex.: `jogo-acoes` chamando o serviço de e-mail; se amanhã existir um serviço de
+cobrança, ele teria sua própria instância e seus próprios clientes). Como o número de clientes
+que vão precisar de chave é pequeno por enquanto (1, o próprio `jogo-acoes`), uma interface de
+administração foi conscientemente deixada de fora do escopo inicial: a linha de comando já
+resolve o problema real sem o custo de construir e manter uma UI que ninguém usaria ainda.
 
 Por ser um projeto pequeno e autocontido, ele também serve como **exemplo compacto de
 Spec-Driven Development (SDD)** — a metodologia usada aqui, mais fácil de avaliar de ponta a

@@ -5,8 +5,12 @@ Traduz `spec.md` em decisões técnicas. Valida contra `memory/constitution.md`.
 ## Contexto técnico
 
 Aplicação de linha de comando em Java, de execução curta (roda, grava uma linha, sai) — não
-um serviço de longa duração. Escreve num banco de dados relacional compartilhado com o(s)
-serviço(s) consumidor(es), que só têm acesso de leitura (`SELECT`) a essa tabela.
+um serviço de longa duração. Cada serviço que precisa restringir quem pode chamá-lo roda sua
+própria cópia deste projeto, no mesmo container/ambiente onde ele próprio roda, com seu
+próprio banco de dados — nunca uma instância ou um banco compartilhado entre serviços
+diferentes. O próprio serviço protegido é quem faz leitura (`SELECT`) nesse banco local, via a
+futura biblioteca de leitura, para validar as chamadas que recebe de clientes (ex.:
+`jogo-acoes` chamando o serviço de e-mail).
 
 ## Decisões de arquitetura
 
@@ -31,7 +35,8 @@ Maven separados desde já, mesmo com a leitura ainda fora de escopo desta featur
 
 - **Emissão** (esta feature): gera a chave, calcula o hash, persiste, expõe a CLI.
 - **Leitura** (feature futura, biblioteca): só lê pelo hash para validar uma chave recebida
-  — usada como dependência pelo serviço de e-mail, sem trazer a lógica de geração/CLI junto.
+  — usada como dependência pelo serviço protegido (ex.: o serviço de e-mail), rodando no
+  mesmo container/banco dessa instância, sem trazer a lógica de geração/CLI junto.
 
 ## Riscos e trade-offs
 
