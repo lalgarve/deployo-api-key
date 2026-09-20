@@ -90,3 +90,16 @@ em `plan.md`) — gera a chave com prefixo `dak_` + 32 bytes de entropia em base
 
 **Issues:** #2 aberta (T000-T002 concluídas, T003-T008 pendentes); PR #6 aberta corrigindo o
 CI do `main`.
+
+PRs #6 e #7 mescladas (CI verde nas duas). Comparei este arquivo com o `memory/constitution.md`
+atual do `jogo-acoes` (que migrou de `docs/context/desenvolvimento.md` pra esse mesmo caminho,
+citando o `deployo-template-java` como referência) e portei duas seções genuinamente
+aplicáveis aqui: "Status do sistema: pré-produção" (schema/contrato podem mudar livre,
+sem migração de dado real, enquanto não há usuário real) e um esclarecimento em "Branches e
+Pull Requests" sobre continuar na mesma branch entre sessões/ferramentas. O resto do que
+mudou lá (numeração de iteração, coexistência com `docs/context/iteracao-N.md`, labels de
+Issue específicos, carve-out de OpenAPI, nota sobre custo de API do Gemini) é complexidade
+da escala do `jogo-acoes`, não pertinente aqui.
+
+**Commits (continuação):**
+- `e3538f7` docs: port pre-production status and branch-continuity sections from jogo-acoes
