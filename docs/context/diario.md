@@ -75,3 +75,18 @@ Corrigido sobrescrevendo `driver-class-name` também, e portado o mesmo fix pro
 
 **Commits (continuação):**
 - `b7051b6` fix: override datasource driver in the smoke test, not just the URL
+
+## 2026-09-20
+
+**Resumo:** retomando a sessão, descoberto que o fix do CI (`b7051b6`/`a2e3315` acima) nunca
+chegou ao `main` — a PR #4 mesclou no commit anterior ao fix, deixando o `main` com CI
+vermelho desde então (confirmado: os dois merges seguintes, #4 e #5, ficaram vermelhos).
+Aberta a PR #6 reaproveitando a mesma branch para trazer o fix. Em paralelo, implementada a
+T002: `ApiKeyGenerator` (pacote `io.deployo.apikey.issuance`, a frente de "Emissão" definida
+em `plan.md`) — gera a chave com prefixo `dak_` + 32 bytes de entropia em base64url.
+
+**Commits:**
+- `80f978a` feat: generate a random API key with the dak_ prefix (T002)
+
+**Issues:** #2 aberta (T000-T002 concluídas, T003-T008 pendentes); PR #6 aberta corrigindo o
+CI do `main`.
