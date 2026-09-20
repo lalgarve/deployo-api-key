@@ -34,20 +34,20 @@ class ApiKeysMigrationTest {
         Timestamp expiresAt = Timestamp.from(Instant.now().plusSeconds(90L * 24 * 60 * 60));
 
         jdbcTemplate.update(
-                "INSERT INTO api_keys (service_name, key_hash, created_at, expires_at) VALUES (?, ?, ?, ?)",
-                "email-service", "hash-with-validity", createdAt, expiresAt);
+                "INSERT INTO api_keys (client_name, key_hash, created_at, expires_at) VALUES (?, ?, ?, ?)",
+                "jogo-acoes", "hash-with-validity", createdAt, expiresAt);
 
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM api_keys WHERE service_name = ? AND key_hash = ?",
-                Integer.class, "email-service", "hash-with-validity");
+                "SELECT COUNT(*) FROM api_keys WHERE client_name = ? AND key_hash = ?",
+                Integer.class, "jogo-acoes", "hash-with-validity");
         assertThat(count).isEqualTo(1);
     }
 
     @Test
     void expiresAtIsNullableForKeysWithIndeterminateValidity() {
         jdbcTemplate.update(
-                "INSERT INTO api_keys (service_name, key_hash, created_at, expires_at) VALUES (?, ?, ?, NULL)",
-                "email-service", "hash-without-validity", Timestamp.from(Instant.now()));
+                "INSERT INTO api_keys (client_name, key_hash, created_at, expires_at) VALUES (?, ?, ?, NULL)",
+                "jogo-acoes", "hash-without-validity", Timestamp.from(Instant.now()));
 
         Timestamp expiresAt = jdbcTemplate.queryForObject(
                 "SELECT expires_at FROM api_keys WHERE key_hash = ?",
@@ -56,9 +56,9 @@ class ApiKeysMigrationTest {
     }
 
     @Test
-    void serviceNameCannotBeNull() {
+    void clientNameCannotBeNull() {
         assertThatThrownBy(() -> jdbcTemplate.update(
-                "INSERT INTO api_keys (service_name, key_hash, created_at) VALUES (NULL, ?, ?)",
+                "INSERT INTO api_keys (client_name, key_hash, created_at) VALUES (NULL, ?, ?)",
                 "some-hash", Timestamp.from(Instant.now())))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
@@ -66,16 +66,16 @@ class ApiKeysMigrationTest {
     @Test
     void keyHashCannotBeNull() {
         assertThatThrownBy(() -> jdbcTemplate.update(
-                "INSERT INTO api_keys (service_name, key_hash, created_at) VALUES (?, NULL, ?)",
-                "email-service", Timestamp.from(Instant.now())))
+                "INSERT INTO api_keys (client_name, key_hash, created_at) VALUES (?, NULL, ?)",
+                "jogo-acoes", Timestamp.from(Instant.now())))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
     void createdAtCannotBeNull() {
         assertThatThrownBy(() -> jdbcTemplate.update(
-                "INSERT INTO api_keys (service_name, key_hash, created_at) VALUES (?, ?, NULL)",
-                "email-service", "some-hash"))
+                "INSERT INTO api_keys (client_name, key_hash, created_at) VALUES (?, ?, NULL)",
+                "jogo-acoes", "some-hash"))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
@@ -83,12 +83,12 @@ class ApiKeysMigrationTest {
     void keyHashMustBeUnique() {
         Timestamp now = Timestamp.from(Instant.now());
         jdbcTemplate.update(
-                "INSERT INTO api_keys (service_name, key_hash, created_at) VALUES (?, ?, ?)",
-                "email-service", "duplicate-hash", now);
+                "INSERT INTO api_keys (client_name, key_hash, created_at) VALUES (?, ?, ?)",
+                "jogo-acoes", "duplicate-hash", now);
 
         assertThatThrownBy(() -> jdbcTemplate.update(
-                "INSERT INTO api_keys (service_name, key_hash, created_at) VALUES (?, ?, ?)",
-                "another-service", "duplicate-hash", now))
+                "INSERT INTO api_keys (client_name, key_hash, created_at) VALUES (?, ?, ?)",
+                "billing", "duplicate-hash", now))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 }
