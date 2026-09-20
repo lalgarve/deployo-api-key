@@ -64,3 +64,29 @@ escrevi um smoke test real chamando `main()` diretamente, cobrindo a linha de ve
 **Nota:** o `docker-compose.yml`/CI não foram validados de ponta a ponta nesta sessão — sem
 daemon Docker disponível neste ambiente. Sintaxe checada (`docker compose config`, YAML do
 workflow), mas vale confirmar no primeiro run real de CI.
+
+O primeiro CI real da PR #4 falhou, confirmando exatamente essa ressalva: com
+`SPRING_PROFILES_ACTIVE=docker`, `application-docker.yml` sobrescreve
+`driver-class-name` para `org.postgresql.Driver`, e o smoke test só sobrescrevia a URL do
+datasource (para H2) — a aplicação tentou abrir a URL H2 com o driver do Postgres e quebrou.
+Invisível localmente porque o perfil `docker` nunca tinha rodado de verdade antes do push.
+Corrigido sobrescrevendo `driver-class-name` também, e portado o mesmo fix pro
+`deployo-template-java` (mesmo padrão, mesmo bug latente, PR própria lá).
+
+**Commits (continuação):**
+- `b7051b6` fix: override datasource driver in the smoke test, not just the URL
+
+## 2026-09-20
+
+**Resumo:** retomando a sessão, descoberto que o fix do CI (`b7051b6`/`a2e3315` acima) nunca
+chegou ao `main` — a PR #4 mesclou no commit anterior ao fix, deixando o `main` com CI
+vermelho desde então (confirmado: os dois merges seguintes, #4 e #5, ficaram vermelhos).
+Aberta a PR #6 reaproveitando a mesma branch para trazer o fix. Em paralelo, implementada a
+T002: `ApiKeyGenerator` (pacote `io.deployo.apikey.issuance`, a frente de "Emissão" definida
+em `plan.md`) — gera a chave com prefixo `dak_` + 32 bytes de entropia em base64url.
+
+**Commits:**
+- `80f978a` feat: generate a random API key with the dak_ prefix (T002)
+
+**Issues:** #2 aberta (T000-T002 concluídas, T003-T008 pendentes); PR #6 aberta corrigindo o
+CI do `main`.
