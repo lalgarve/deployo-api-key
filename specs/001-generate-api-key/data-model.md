@@ -7,7 +7,7 @@
 | Campo | Tipo | Obrigatório | Validação |
 |---|---|---|---|
 | `id` | BIGSERIAL | sim | gerado automaticamente na inserção |
-| `service_name` | VARCHAR(255) | sim | não vazio; identifica o serviço/cliente dono da chave |
+| `client_name` | VARCHAR(255) | sim | não vazio; identifica o cliente dono da chave (quem vai chamar o serviço onde esta instância roda) |
 | `key_hash` | VARCHAR(255) | sim | HMAC-SHA256 da chave em texto puro, em hexadecimal; único (índice `UNIQUE`) |
 | `created_at` | TIMESTAMP (UTC) | sim | gerado automaticamente na inserção |
 | `expires_at` | TIMESTAMP (UTC) | não | nulo = validade indeterminada; quando definido, igual a `created_at` + N dias (`--validity-days`) |
@@ -21,8 +21,8 @@ perfil ativo. Mapeamento por Hibernate/Spring Data JPA chega na T005.
 
 ## Relacionamentos
 
-Nenhum — tabela isolada nesta feature. Uma relação com uma futura tabela de "serviços
-cadastrados" pode fazer sentido quando `service_name` deixar de aceitar qualquer string (ver
+Nenhum — tabela isolada nesta feature. Uma relação com uma futura tabela de "clientes
+cadastrados" pode fazer sentido quando `client_name` deixar de aceitar qualquer string (ver
 decisão em aberto em `spec.md`), mas isso não é modelado agora.
 
 ## Invariantes
@@ -30,7 +30,7 @@ decisão em aberto em `spec.md`), mas isso não é modelado agora.
 - `key_hash` é único: duas chaves nunca colidem no hash armazenado.
 - A chave em texto puro nunca é persistida em nenhuma coluna desta ou de qualquer outra
   tabela.
-- `service_name` nunca é vazio ou só espaço em branco (validado antes da persistência, não
+- `client_name` nunca é vazio ou só espaço em branco (validado antes da persistência, não
   só no banco).
 - `expires_at`, quando não nulo, é sempre posterior a `created_at` — garantido por
   construção, já que é sempre calculado como `created_at` + N dias com N > 0 (nunca definido

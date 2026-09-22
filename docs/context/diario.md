@@ -103,3 +103,18 @@ da escala do `jogo-acoes`, não pertinente aqui.
 
 **Commits (continuação):**
 - `e3538f7` docs: port pre-production status and branch-continuity sections from jogo-acoes
+
+Esclarecido o modelo de implantação: cada serviço protegido roda sua própria cópia deste
+projeto (mesmo container, banco próprio, nunca compartilhado) — então o parâmetro da CLI não
+deveria nomear o serviço protegido (implícito na instância), e sim o **cliente** autorizado a
+chamá-lo. Renomeado `--service`/`service_name` para `--client`/`client_name` em toda a spec,
+plan, data-model, contrato de CLI, tasks, README e no schema (`V1` editado direto, sem `V2`,
+seguindo a seção de pré-produção do `memory/constitution.md`). Exemplo trocado de
+`email-service` para `jogo-acoes` (o cliente real) nos textos.
+
+**Commits (continuação):**
+- `6105bf7` decision: rename service to client, clarify per-service deployment
+- `c044e1e` refactor: rename service_name to client_name in the api_keys schema
+
+**Issues:** #2 aberta (T000-T002 concluídas, T003-T008 pendentes); PR #8 mesclada, PR #9
+(esta renomeação) resolvendo conflito de merge com a #8 no próprio `diario.md`.
